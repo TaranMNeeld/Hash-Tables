@@ -53,24 +53,21 @@ class HashTable:
 
         Fill this in.
         '''
+
+        index = self._hash_mod(key)
+        pair = LinkedPair(key, value)
         if self.count >= self.capacity:
             self.resize()
-
-        pair = LinkedPair(key, value)
-        for i in range(0, self.capacity):
-            if i == self._hash_mod(key):
-                if self.storage[i] is None:
-                    self.count += 1
-                    self.storage[i] = pair
-                    print(self.storage)
-                    return
-                else:
-                    current = self.storage[i]
-                    while current.next is not None:
-                        current = current.next
-                    current.next = pair
-                    print(self.storage)
-                    return
+        if self.storage[index] is None:
+            self.count += 1
+            self.storage[index] = pair
+            return
+        else:
+            current = self.storage[index]
+            while current.next is not None:
+                current = current.next
+            current.next = pair
+            return
 
 
     def remove(self, key):
@@ -109,19 +106,17 @@ class HashTable:
 
         Fill this in.
         '''
+        old_storage = self.storage.copy()
         self.capacity *= 2
-        new_storage = [None] * self.capacity
+        self.storage = [None] * self.capacity
         for i in range(self.count):
-            current = self.storage[i]
-            print()
-            new_storage.insert(current.key, current.value)
-            print(f'inserted ({current.key}{current.value})')
+            current = old_storage[i]
+            if current is None:
+                pass
             while current.next is not None:
                 current = current.next
-                new_storage.insert(current.key, current.value)
-
-        self.storage = new_storage
-
+                print(f'key:{current.key} value:{current.value}')
+                self.storage.insert(current.key, current.value)
 
 
 if __name__ == "__main__":
