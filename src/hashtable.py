@@ -53,7 +53,6 @@ class HashTable:
 
         Fill this in.
         '''
-        print(f'if {self.count} >= {self.capacity}')
         if self.count >= self.capacity:
             self.resize()
 
@@ -63,7 +62,6 @@ class HashTable:
                 if self.storage[i] is None:
                     self.count += 1
                     self.storage[i] = pair
-                    print(f'bucket: {i} is now ({pair.key}, {pair.value})')
                     print(self.storage)
                     return
                 else:
@@ -71,7 +69,6 @@ class HashTable:
                     while current.next is not None:
                         current = current.next
                     current.next = pair
-                    print(f'inserted ({current.next.key}, {current.next.value}) into bucket {i}')
                     print(self.storage)
                     return
 
@@ -94,7 +91,16 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
+        for i in range(0, self.capacity):
+            if i == self._hash_mod(key) and self.storage[self._hash_mod(key)] is not None:
+                current = self.storage[i]
+                if key == current.key:
+                    return current.value
+                while current.next is not None:
+                    current = current.next
+                    if key == current.key:
+                        return current.value
+        return None
 
     def resize(self):
         '''
@@ -106,7 +112,14 @@ class HashTable:
         self.capacity *= 2
         new_storage = [None] * self.capacity
         for i in range(self.count):
-            new_storage[i] = self.storage[i]
+            current = self.storage[i]
+            print()
+            new_storage.insert(current.key, current.value)
+            print(f'inserted ({current.key}{current.value})')
+            while current.next is not None:
+                current = current.next
+                new_storage.insert(current.key, current.value)
+
         self.storage = new_storage
 
 
