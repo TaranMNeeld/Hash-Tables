@@ -56,18 +56,22 @@ class HashTable:
 
         index = self._hash_mod(key)
         pair = LinkedPair(key, value)
-        if self.count >= self.capacity:
-            self.resize()
         if self.storage[index] is None:
             self.count += 1
             self.storage[index] = pair
-            return
         else:
             current = self.storage[index]
+            if current.key == key:
+                current.value = pair.value
+                return
             while current.next is not None:
                 current = current.next
+                if current.key == key:
+                    current.value = pair.value
+                    return
             current.next = pair
-            return
+        if self.count >= self.capacity:
+            self.resize()
 
     def remove(self, key):
         '''
@@ -80,13 +84,14 @@ class HashTable:
         index = self._hash_mod(key)
         if self.storage[index] is not None:
             current = self.storage[index]
-            if key == self.storage[index].key:
-                self.storage[index] = None
+            if key == current.key:
+                self.storage[index] = current.next
                 return
-            while self.storage[index].next is not None:
-                self.storage[index] = self.storage[index].next
-                if key == self.storage[index].key:
-                    self.storage[index] = None
+            while current.next is not None:
+                prev = current
+                current = current.next
+                if key == current.key:
+                    prev.next = current.next
                     return
             return 'Item does not exist'
 
@@ -116,6 +121,7 @@ class HashTable:
 
         Fill this in.
         '''
+        self.count = 0
         old_storage = self.storage.copy()
         self.capacity *= 2
         self.storage = [None] * self.capacity
@@ -125,7 +131,6 @@ class HashTable:
                 current = item
                 while current.next is not None:
                     current = current.next
-                    print(f'key:{current.key} value:{current.value}')
                     self.insert(current.key, current.value)
 
 
@@ -134,6 +139,7 @@ if __name__ == "__main__":
     ht.insert("line_1", "Tiny hash table")
     ht.insert("line_2", "Filled beyond capacity")
     ht.insert("line_3", "Linked list saves the day!")
+    ht.insert("line_1", "overwritten")
     ht.insert("line_4", "Tiny hash table")
     ht.insert("something", "Linked list saves the day!")
     ht.insert("line_6", "hello!")
